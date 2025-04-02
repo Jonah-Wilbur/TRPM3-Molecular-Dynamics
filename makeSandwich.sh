@@ -77,7 +77,7 @@ function func.makeSandwich
     # b) get a recent .mdp output file
     echo
     echo "=== Preprocessing single-layered system ==="
-    COMMAND="$GMX grompp -quiet -f $MDP.mdp -c $GRO.gro -r $GRO.gro -p $TOP.top -n $NDX.ndx -o $TOP$SINGLE.tpr -po $MDP$SINGLE.mdp" 
+    COMMAND="$GMX grompp -quiet -f $MDP.mdp -c $GRO.gro -r $GRO.gro -p $TOP.top -n $NDX.ndx -o $TOP$SINGLE.tpr -po $MDP$SINGLE.mdp -maxwarn 1" 
     echo "RUNNING: $COMMAND"
     $COMMAND > grompp.single.out 2>&1
     func.testquit $?
@@ -177,19 +177,19 @@ function func.makeSandwich
     sed -i 's/swapcoords.*/swapcoords = Z/g' $MDP$DOUBLE.mdp
     func.testquit $?
     echo "iontypes = 2"                                    >> $MDP$DOUBLE.mdp
-    echo "iontype0-name  = $CATION"                            >> $MDP$DOUBLE.mdp
-    echo "iontype0-in-A  = -1"                             >> $MDP$DOUBLE.mdp # change this
-    echo "iontype0-in-B  = -1"                             >> $MDP$DOUBLE.mdp # change this
-    echo "iontype1-name  = $ANION"                            >> $MDP$DOUBLE.mdp
-    echo "iontype1-in-A  = -1"                             >> $MDP$DOUBLE.mdp # change this
-    echo "iontype1-in-B  = -1"                             >> $MDP$DOUBLE.mdp # change this
+    echo "iontype0-name  = $CATION"                        >> $MDP$DOUBLE.mdp
+    echo "iontype0-in-A  = -1"                             >> $MDP$DOUBLE.mdp # change this number
+    echo "iontype0-in-B  = -1"                             >> $MDP$DOUBLE.mdp # change this number
+    echo "iontype1-name  = $ANION"                         >> $MDP$DOUBLE.mdp
+    echo "iontype1-in-A  = -1"                             >> $MDP$DOUBLE.mdp # change this number
+    echo "iontype1-in-B  = -1"                             >> $MDP$DOUBLE.mdp # change this number
     echo "solvent-group  = ${SOLVGROUP}_${SOLVGROUP}_copy" >> $MDP$DOUBLE.mdp
     
     # Preprocess the double-layered system:
     echo "=== Building double-layered system ==="
 
 
-    COMMAND="$GMX grompp -quiet -f $MDP$DOUBLE.mdp -c $GRO$DOUBLE.gro -r $GRO$DOUBLE.gro -p $TOP$DOUBLE.top -n $NDX$DOUBLE.ndx -o $GRO$DOUBLE.tpr"
+    COMMAND="$GMX grompp -quiet -f $MDP$DOUBLE.mdp -c $GRO$DOUBLE.gro -r $GRO$DOUBLE.gro -p $TOP$DOUBLE.top -n $NDX$DOUBLE.ndx -o $GRO$DOUBLE.tpr -maxwarn 1"
     echo "RUNNING: $COMMAND"
     $COMMAND > grompp.double.out 2>&1
     func.testquit $?
@@ -207,23 +207,23 @@ source /usr/local/bin
 GMX=gmx
 func.testquit $?
 export GMX_NO_QUOTES=1
-
+1
 # Input files (leave away extension!)
 # don't use standard output file names like 'mdout.mdp' as input files,
 # they could be overwritten!
 MDP=step7_production    # .mdp  (i.e. membrane.mdp, be sure to set swapcoords=no in this parameter file!)
-GRO=equilibration5    # .gro  (membrane.gro)
+GRO=membrane_md_0_1    # .gro  (membrane.gro)
 TOP=topol    # .top  ...
-NDX=pls    # .ndx
-CATION=CAL # residue name
+NDX=newest_index    # .ndx
+CATION=CAM # residue name
 ANION=CLA # residue name
 
 # Index file group names of ions that can be exchanged with solvent molecules:
 IONSGROUP="Ions"
-SOLVGROUP="SOLV"
+SOLVGROUP="TIP3"
 # Group name of the index group that contains the compartment-partitioning atoms (i.e. the channel)
-SPLITGROUP="SOLU"
-SWAPFREQ=50
+SPLITGROUP="MEMB"
+SWAPFREQ=500
 
 # Topology include files, force field files:
 #export GMXLIB=./myTop/$GMXLIB
